@@ -1,6 +1,8 @@
 'use client'
 import { Check } from "@gravity-ui/icons";
 import { Button, Select, FieldError, Form, Input, Label, TextField, ListBox, TextArea, Card } from "@heroui/react";
+import { success } from "better-auth";
+import { toast } from "react-toastify";
 
 
 
@@ -23,6 +25,9 @@ const onSubmit =  async(e) => {
 });
 
  const tutorData = await res.json();
+ if(tutorData){
+    toast.success('Your Data Sucessfuly Add')
+ }
  console.log(tutorData)
 };
 
@@ -208,36 +213,27 @@ const onSubmit =  async(e) => {
                                 className="w-full"
                                 placeholder="Select category"
                             >
-                                <Label>Subject Category</Label>
+                                <Label>Teaching Mode</Label>
                                 <Select.Trigger className="rounded-2xl">
                                     <Select.Value />
                                     <Select.Indicator />
                                 </Select.Trigger>
                                 <Select.Popover>
                                     <ListBox>
-                                        <ListBox.Item id="Ict" textValue="Ict">
-                                            ICT                                        <ListBox.ItemIndicator />
-                                        </ListBox.Item>
-                                        <ListBox.Item id="Mathematics" textValue="Mathematics">
-                                            Mathematics
+                                     
+                                        <ListBox.Item id="Online" textValue="Mathematics">
+                                            Online
                                             <ListBox.ItemIndicator />
                                         </ListBox.Item>
-                                        <ListBox.Item id="Physics" textValue="Physics">
-                                            Physics
+                                        <ListBox.Item id="Offline" textValue="Offline">
+                                            Offline
                                             <ListBox.ItemIndicator />
                                         </ListBox.Item>
-                                        <ListBox.Item id="Chemistry" textValue="Chemistry">
-                                            Chemistry
+                                        <ListBox.Item id="Both" textValue="Both">
+                                            Both
                                             <ListBox.ItemIndicator />
                                         </ListBox.Item>
-                                        <ListBox.Item id="Biology" textValue="Biology">
-                                            Biology
-                                            <ListBox.ItemIndicator />
-                                        </ListBox.Item>
-                                        <ListBox.Item id="English" textValue="English">
-                                            English
-                                            <ListBox.ItemIndicator />
-                                        </ListBox.Item>
+                                     
                                     </ListBox>
                                 </Select.Popover>
                             </Select>

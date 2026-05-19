@@ -120,6 +120,7 @@ const Banner = () => {
                 </div>
 
                 <div>
+                   <Link href={'/tutor'}>
                     <Button
                         as={Link}
                         href="/tutors"
@@ -131,6 +132,8 @@ const Banner = () => {
                     >
                         {s.ctaText}
                     </Button>
+                   </Link>
+
                 </div>
             </div>
 
