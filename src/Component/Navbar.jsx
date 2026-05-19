@@ -25,7 +25,7 @@ export default function Navbar() {
   const authNavItems = [
     { name: "Add Tutor", href: "/addTutor" },
     { name: "My Tutors", href: "/my-tutors" },
-    { name: "My Booked Sessions", href: "/booked-sessions" },
+    { name: "My Booked Sessions", href: "/mybookedsession" },
   ];
 
   // Close dropdown when clicking outside

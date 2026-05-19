@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Envelope } from "@gravity-ui/icons";
 import { Button, Input, Label, Modal, Surface, TextField } from "@heroui/react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "react-toastify";
@@ -10,7 +9,6 @@ const StudentBook = ({ tutorData }) => {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
-  const [studentName, setStudentName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,23 +17,25 @@ const StudentBook = ({ tutorData }) => {
   const sessionDate = tutorData?.startDate ? new Date(tutorData.startDate) : null;
   const isDateExpired = sessionDate && today > sessionDate;
   const isBlocked = noSlots || isDateExpired;
-
+  const institutes = tutorData?.institution;
+  
   const handleBooking = async () => {
-    if (!studentName || !phone) {
+    if (!phone) {
       toast.error("Please fill all fields");
       return;
     }
 
     const bookingData = {
-      studentName,
       phone,
       tutorId: tutorData._id,
       tutorName: tutorData.destinationName,
       studentEmail: user?.email,
       bookStatus: "Pending",
       bookingDate: new Date().toISOString(),
-    };
+      institutes:tutorData.institution,
 
+    };
+     console.log(bookingData)
     setLoading(true);
     try {
       const res = await fetch("http://localhost:1000/bookSession", {
@@ -46,7 +46,6 @@ const StudentBook = ({ tutorData }) => {
       const data = await res.json();
       if (data.insertedId) {
         toast.success("Session booked successfully!");
-        setStudentName("");
         setPhone("");
       }
     } catch (error) {
@@ -71,9 +70,9 @@ const StudentBook = ({ tutorData }) => {
         {noSlots ? "No Slots Available" : isDateExpired ? "Session Expired" : "Book Session"}
       </Button>
 
-      <Modal.Backdrop className={`w-[400px]`}>
+      <Modal.Backdrop>
         <Modal.Container placement="auto">
-          <Modal.Dialog className="sm:max-w-md">
+          <Modal.Dialog className="lg:max-w-md">
             <Modal.CloseTrigger />
 
             <Modal.Header>
@@ -90,7 +89,7 @@ const StudentBook = ({ tutorData }) => {
                   {/* Auto-filled */}
                   <TextField className="w-full outline-none" isReadOnly>
                     <Label>Name</Label>
-                    <Input value={tutorData?.institution || ""} />
+                    <Input   className="focus:outline-none focus:ring-0" value={tutorData?.institution || ""} />
                   </TextField>
                   <TextField className="w-full outline-none" isReadOnly>
                     <Label>Tutor Name</Label>
@@ -122,6 +121,7 @@ const StudentBook = ({ tutorData }) => {
                 Cancel
               </Button>
               <Button
+                onClick={handleBooking}
                 isLoading={loading}
                 className="bg-gradient-to-r from-indigo-600 to-violet-500 text-white"
               >
