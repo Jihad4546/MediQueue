@@ -55,8 +55,8 @@ const FeaturedTutors = async () => {
                                         {/* টিউটরের ছবি (গ্রুপ হোভার ইফেক্টসহ) */}
                                         <div className="relative w-full h-56 rounded-xl overflow-hidden mb-5 group">
                                             <Image
-                                                src={tutor.photo}
-                                                alt={tutor.tutorName}
+                                                src={tutor.imageUrl}
+                                                alt={tutor.destinationName}
                                                 fill
                                                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -64,14 +64,14 @@ const FeaturedTutors = async () => {
                                             />
                                             {/* সাবজেক্টের একটি ছোট ব্যাজ ছবির উপরে */}
                                             <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm">
-                                                {tutor.subjectCategory}
+                                                {tutor.category}
                                             </div>
                                         </div>
 
                                         {/* টিউটরের বিস্তারিত তথ্য */}
                                         <div className="space-y-2 px-1">
                                             <h3 className="text-xl font-bold text-gray-900 tracking-tight">
-                                                {tutor.tutorName}
+                                                {tutor.destinationName}
                                             </h3>
                                             <p className="text-sm text-gray-500 font-medium flex items-center gap-1">
                                                 <span>🏫</span> {tutor.institutionExperience || "Expert Tutor"}
@@ -82,7 +82,7 @@ const FeaturedTutors = async () => {
                                             <div className="space-y-1.5 text-sm text-gray-600 font-normal">
                                                 <p className="flex items-center gap-2">
                                                     <span className="text-gray-400">📅</span>
-                                                    <span><strong className="text-gray-800">Available:</strong> {daysString} ({tutor.availableTimeSlot})</span>
+                                                    <span><strong className="text-gray-800">Available:</strong> {daysString} ({tutor.price})</span>
                                                 </p>
                                                 <p className="flex items-center gap-2">
                                                     <span className="text-gray-400">🚀</span>
