@@ -44,18 +44,18 @@ const MyTutor = () => {
 
   const handleUpdateSave = async () => {
     if (!selectedTutor?._id) return;
-      
-        const {data:tokenData} = await authClient.token()
-        console.log(tokenData)
+
+    const { data: tokenData } = await authClient.token();
 
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/updateTutor/${selectedTutor._id}`,
         {
           method: "PUT",
-          headers: { 
-            "content-type": "application/json" , 
-            authorization:`Bearer ${tokenData?.token}`},
+          headers: {
+            "content-type": "application/json",
+            authorization: `Bearer ${tokenData?.token}`,
+          },
           body: JSON.stringify(updateForm),
         }
       );
@@ -77,15 +77,18 @@ const MyTutor = () => {
 
   const handleDelete = async () => {
     if (!deleteTarget?._id) return;
-      const { data: tokenData } = await authClient.token();
+    const { data: tokenData } = await authClient.token();
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/deleteTutor/${deleteTarget._id}`, {
-        method: "DELETE",
-        headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${tokenData?.token}`,
-      },
-      });
+      await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/deleteTutor/${deleteTarget._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "content-type": "application/json",
+            authorization: `Bearer ${tokenData?.token}`,
+          },
+        }
+      );
       setTutors((prev) => prev.filter((t) => t._id !== deleteTarget._id));
       setDeleteTarget(null);
       toast.success("Tutor deleted.");
@@ -99,13 +102,19 @@ const MyTutor = () => {
   const handleDeleteCancel = () => setDeleteTarget(null);
 
   if (loading)
-    return <p className="text-center p-10 text-gray-400 dark:text-gray-500">Loading...</p>;
+    return (
+      <p className="text-center p-10 text-gray-400 dark:text-gray-500">
+        Loading...
+      </p>
+    );
 
   if (tutors.length === 0)
     return (
-      <div className="flex flex-col items-center justify-center py-32 text-center">
+      <div className="flex flex-col items-center justify-center py-32 text-center px-4">
         <div className="text-6xl mb-4">📭</div>
-        <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">No tutors found</h3>
+        <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">
+          No tutors found
+        </h3>
         <p className="text-gray-400 dark:text-gray-500 text-sm">
           You haven't created any tutor profiles yet.
         </p>
@@ -113,23 +122,33 @@ const MyTutor = () => {
     );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 text-gray-900 dark:text-gray-100">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 text-gray-900 dark:text-gray-100">
 
       {/* ── Page Header ── */}
-      <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Tutors</h1>
-        <span
-          className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"
-        >
+      <div className="flex items-center gap-3 mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+          My Tutors
+        </h1>
+        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
           {tutors.length} tutors
         </span>
       </div>
 
-      {/* ── Table Container ── */}
-      <div className="overflow-x-auto rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
-        <table className="min-w-[800px] w-full text-sm border-separate border-spacing-y-1">
+      {/* ── Desktop Table ── */}
+      {/* 
+        FIX: আগে `hidden md:block` ছিল — Tailwind purge বা config issue হলে কাজ করে না।
+        এখন inline style দিয়ে handle করা হয়েছে এবং CSS class সহজ রাখা হয়েছে।
+        `w-full overflow-x-auto` দিয়ে table সবসময় visible থাকবে desktop-এ।
+      */}
+      <div className="hidden-on-mobile text-center overflow-x-auto rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
+        <style>{`
+          .hidden-on-mobile { display: none; }
+          @media (min-width: 768px) { .hidden-on-mobile { display: block; } }
+          .hidden-on-desktop { display: flex; flex-direction: column; gap: 1rem; }
+          @media (min-width: 768px) { .hidden-on-desktop { display: none; } }
+        `}</style>
 
-          {/* Head */}
+        <table className="w-full text-sm border-separate border-spacing-y-1" style={{ minWidth: "800px" }}>
           <thead>
             <tr className="bg-gray-50 dark:bg-gray-800/50 text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
               <th className="text-left px-5 py-4 rounded-tl-2xl">#</th>
@@ -141,51 +160,36 @@ const MyTutor = () => {
               <th className="text-left px-5 py-4 rounded-tr-2xl">Actions</th>
             </tr>
           </thead>
-
-          {/* Body */}
           <tbody>
             {tutors.map((tutor, index) => (
               <tr
                 key={tutor._id}
                 className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition duration-200"
               >
-                {/* Serial */}
                 <td className="px-5 py-4 text-gray-400 dark:text-gray-500 font-medium">
                   {index + 1}
                 </td>
-
-                {/* Tutor */}
                 <td className="px-5 py-4">
                   <span className="font-medium text-gray-800 dark:text-gray-200 whitespace-nowrap">
                     {tutor.destinationName}
                   </span>
                 </td>
-
-                {/* Category */}
                 <td className="px-5 py-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">
                   {tutor.category}
                 </td>
-
-                {/* Price */}
                 <td className="px-5 py-4 font-semibold text-gray-800 dark:text-gray-200 whitespace-nowrap">
                   ৳{tutor.price}/hr
                 </td>
-
-                {/* Location */}
                 <td className="px-5 py-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">
                   {tutor.location}
                 </td>
-
-                {/* Mode */}
                 <td className="px-5 py-4">
                   <span className="rounded-full bg-green-100 dark:bg-green-950/40 px-3 py-1 text-xs font-semibold text-green-700 dark:text-green-400 whitespace-nowrap">
                     {tutor.teachingMode}
                   </span>
                 </td>
-
-                {/* Actions */}
-                <td className="px-5 py-4 text-center">
-                  <div className="flex items-center justify-center gap-2">
+                <td className="px-5 py-4">
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleUpdateOpen(tutor)}
                       className="rounded-full border border-blue-200 dark:border-blue-800 px-4 py-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 transition hover:bg-blue-50 dark:hover:bg-blue-950/30 whitespace-nowrap"
@@ -206,12 +210,80 @@ const MyTutor = () => {
         </table>
       </div>
 
+      {/* ── Mobile Cards ── */}
+      <div className="hidden-on-desktop">
+        {tutors.map((tutor, index) => (
+          <div
+            key={tutor._id}
+            className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm p-4"
+          >
+            <div className="flex items-start justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                  #{index + 1}
+                </span>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200 text-sm">
+                  {tutor.destinationName}
+                </h3>
+              </div>
+              <span className="rounded-full bg-green-100 dark:bg-green-950/40 px-2.5 py-0.5 text-xs font-semibold text-green-700 dark:text-green-400 whitespace-nowrap shrink-0">
+                {tutor.teachingMode}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-wide text-gray-400 dark:text-gray-500 font-medium mb-0.5">
+                  Category
+                </p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {tutor.category}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-wide text-gray-400 dark:text-gray-500 font-medium mb-0.5">
+                  Price
+                </p>
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                  ৳{tutor.price}/hr
+                </p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-[10px] uppercase tracking-wide text-gray-400 dark:text-gray-500 font-medium mb-0.5">
+                  Location
+                </p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {tutor.location}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
+              <button
+                onClick={() => handleUpdateOpen(tutor)}
+                className="flex-1 rounded-full border border-blue-200 dark:border-blue-800 py-2 text-xs font-semibold text-blue-600 dark:text-blue-400 transition hover:bg-blue-50 dark:hover:bg-blue-950/30"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => setDeleteTarget(tutor)}
+                className="flex-1 rounded-full border border-red-200 dark:border-red-900 py-2 text-xs font-semibold text-red-500 dark:text-red-400 transition hover:bg-red-50 dark:hover:bg-red-950/30"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* ── UPDATE MODAL ── */}
       {selectedTutor && (
         <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 px-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 sm:p-8 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-800">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Update Tutor</h2>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 sm:p-8 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-800">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+              Update Tutor
+            </h2>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mb-5">
               Edit the details and save changes.
             </p>
 
@@ -227,7 +299,10 @@ const MyTutor = () => {
                 { label: "Location", key: "location" },
                 { label: "Total Slots", key: "totalSlot", type: "number" },
               ].map(({ label, key, type = "text" }) => (
-                <div key={key} className={key === "imageUrl" ? "col-span-1 sm:col-span-2" : ""}>
+                <div
+                  key={key}
+                  className={key === "imageUrl" ? "col-span-1 sm:col-span-2" : ""}
+                >
                   <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
                     {label}
                   </label>
@@ -242,7 +317,6 @@ const MyTutor = () => {
                 </div>
               ))}
 
-              {/* Category */}
               <div>
                 <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
                   Category
@@ -254,13 +328,12 @@ const MyTutor = () => {
                   }
                   className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:border-blue-400"
                 >
-                  {["Ict", "Mathematics", "Physics", "Chemistry", "Biology", "English"].map(
-                    (c) => <option key={c} value={c}>{c}</option>
-                  )}
+                  {["Ict", "Mathematics", "Physics", "Chemistry", "Biology", "English"].map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
                 </select>
               </div>
 
-              {/* Teaching Mode */}
               <div>
                 <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
                   Teaching Mode
@@ -300,9 +373,11 @@ const MyTutor = () => {
       {/* ── DELETE MODAL ── */}
       {deleteTarget && (
         <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 px-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 w-full max-w-sm shadow-xl text-center border border-gray-100 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 sm:p-8 w-full max-w-sm shadow-xl text-center border border-gray-100 dark:border-gray-800">
             <div className="text-5xl mb-4">🗑️</div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Delete Tutor?</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+              Delete Tutor?
+            </h2>
             <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
               Are you sure you want to delete{" "}
               <span className="font-semibold text-gray-700 dark:text-gray-300">
