@@ -2,6 +2,7 @@
 
 import DatePickers from '@/Component/DatePickers';
 import TutorCard from '@/Component/TutorCard';
+import { authClient } from '@/lib/auth-client';
 import { Button, Input, Spinner } from '@heroui/react';
 import { useEffect, useState } from 'react';
 
@@ -38,16 +39,17 @@ const AllTutorPage = () => {
             if (formattedEnd) params.append('endDate', formattedEnd);
 
             try {
-                const { data: tokenData } = await authClient.getSession();
-                const token = tokenData?.session?.token;
-                
-
-
-                const res = await fetch(`http://localhost:1000/addTutor?${params}`,);
+                // ✅ এই দুই লাইন যোগ করো
+                const { data: session } = await authClient.getSession();
+                const token = session?.session?.token;
+                console.log(token)
+                const res = await fetch(`http://localhost:1000/addTutor?${params}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`  // ✅ এটা যোগ করো
+                    }
+                });
                 const data = await res.json();
                 setAddTutors(data);
-
-
             } catch (error) {
                 console.error("Error fetching tutors:", error);
             }
@@ -87,7 +89,7 @@ const AllTutorPage = () => {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         isClearable
-                        onClear={() => setSearch('')}
+
                     />
                 </div>
 
