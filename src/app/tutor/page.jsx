@@ -2,7 +2,7 @@
 
 import DatePickers from '@/Component/DatePickers';
 import TutorCard from '@/Component/TutorCard';
-import { Button, Input } from '@heroui/react';
+import { Button, Input, Spinner } from '@heroui/react';
 import { useEffect, useState } from 'react';
 
 const AllTutorPage = () => {
@@ -10,18 +10,20 @@ const AllTutorPage = () => {
     const [search, setSearch] = useState('');
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchTutors = async () => {
+            setLoading(true);
             const params = new URLSearchParams();
-            
+
             if (search.trim()) params.append('search', search);
-            
+
             // 📝 ডেট অবজেক্ট বা স্ট্রিং যাই আসুক, নিরাপদে YYYY-MM-DD ফরম্যাট করার ফাংশন
             const formatDate = (dateVal) => {
                 if (!dateVal) return null;
                 // যদি HeroUI এর নিজস্ব CalendarDate অবজেক্ট হয় (যাতে .toString() থাকে)
-                const dateStr = dateVal.toString(); 
+                const dateStr = dateVal.toString();
                 const parsed = Date.parse(dateStr);
                 if (!isNaN(parsed)) {
                     return new Date(parsed).toISOString().split("T")[0];
@@ -36,12 +38,21 @@ const AllTutorPage = () => {
             if (formattedEnd) params.append('endDate', formattedEnd);
 
             try {
-                // আপনার ব্যাকএন্ড এপিআই রাউট এ ডেটা পাঠানো হচ্ছে
-                const res = await fetch(`http://localhost:1000/addTutor?${params}`);
+                const { data: tokenData } = await authClient.getSession();
+                const token = tokenData?.session?.token;
+                
+
+
+                const res = await fetch(`http://localhost:1000/addTutor?${params}`,);
                 const data = await res.json();
                 setAddTutors(data);
+
+
             } catch (error) {
                 console.error("Error fetching tutors:", error);
+            }
+            finally {
+                setLoading(false);
             }
         };
 
@@ -97,34 +108,36 @@ const AllTutorPage = () => {
                     <DatePickers key={endDate ? endDate.toString() : 'end'} value={endDate} onChange={setEndDate} />
                 </div>
 
-               <div className=" sm:w-auto">
-                    <Button 
-                        color="danger" 
-                        variant="outline" 
+                <div className=" sm:w-auto">
+                    <Button
+                        color="danger"
+                        variant="outline"
                         className="h-[40px] w-full sm:w-auto font-medium"
                         onPress={handleReset}
                     >
                         Reset Filter
                     </Button>
                 </div>
-                
+
             </div>
 
-            {/* টিউটর কার্ড গ্রিড লেআউট */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto'>
-                {
-                    addTutors.map(addtutor => (
-                        <TutorCard key={addtutor._id} addtutor={addtutor} />
-                    ))
-                }
-            </div>
 
-            {/* কোনো টিউটর না পাওয়া গেলে তার সেফটি মেসেজ */}
-            {addTutors.length === 0 && (
+            {loading ? (
+                <div className="flex justify-center items-center py-20">
+                    <Spinner size="lg" />
+                </div>
+            ) : addTutors.length === 0 ? (
                 <div className="text-center text-gray-500 py-10">
                     No tutors match your search criteria.
                 </div>
+            ) : (
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto'>
+                    {addTutors.map(addtutor => (
+                        <TutorCard key={addtutor._id} addtutor={addtutor} />
+                    ))}
+                </div>
             )}
+
         </div>
     );
 };
