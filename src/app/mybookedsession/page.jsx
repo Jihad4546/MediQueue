@@ -20,12 +20,16 @@ const MyBookings = () => {
         setLoading(false);
         return;
       }
-
+      const token = await authClient.getToken();
       try {
         setLoading(true);
 
         const res = await fetch(
-          `http://localhost:1000/bookSession/${user.email}`
+          `http://localhost:1000/bookSession/${user.email}`, {
+          headers: {
+            authorization: `Bearer ${token}`, // এই হেডারটি ব্যাকএন্ডে চেক হবে
+          },
+        }
         );
 
         if (!res.ok) throw new Error("Failed to load bookings");
@@ -44,7 +48,7 @@ const MyBookings = () => {
   }, [user?.email]);
 
   // ---------------- CANCEL BOOKING ----------------
- const handleCancel = async () => {
+  const handleCancel = async () => {
     if (!cancelTarget?._id) return;
 
     try {
@@ -192,10 +196,9 @@ const MyBookings = () => {
                       disabled={isCancelled}
                       onClick={() => !isCancelled && setCancelTarget(booking)}
                       className={`cursor-pointer rounded-full border px-4 py-1.5 text-xs font-semibold transition whitespace-nowrap
-                        ${
-                          isCancelled
-                            ? "border-gray-200 dark:border-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed"
-                            : "border-red-200 dark:border-red-900/60 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        ${isCancelled
+                          ? "border-gray-200 dark:border-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                          : "border-red-200 dark:border-red-900/60 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
                         }`}
                     >
                       {isCancelled ? "Cancelled" : "Cancel"}

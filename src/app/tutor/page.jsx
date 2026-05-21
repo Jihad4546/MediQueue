@@ -39,10 +39,8 @@ const AllTutorPage = () => {
 
             try {
                 // ✅ এই দুই লাইন যোগ করো
-                
-                const res = await fetch(`http://localhost:1000/addTutor?${params}`, {
-                    
-                });
+
+                const res = await fetch(`http://localhost:1000/addTutor?${params.toString()}`);
                 const data = await res.json();
                 setAddTutors(data);
             } catch (error) {

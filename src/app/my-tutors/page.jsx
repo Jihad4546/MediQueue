@@ -77,10 +77,14 @@ const MyTutor = () => {
 
   const handleDelete = async () => {
     if (!deleteTarget?._id) return;
-
+      const { data: tokenData } = await authClient.token();
     try {
       await fetch(`http://localhost:1000/deleteTutor/${deleteTarget._id}`, {
         method: "DELETE",
+        headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${tokenData?.token}`,
+      },
       });
       setTutors((prev) => prev.filter((t) => t._id !== deleteTarget._id));
       setDeleteTarget(null);
