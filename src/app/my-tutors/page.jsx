@@ -19,7 +19,7 @@ const MyTutor = () => {
     if (isPending) return;
 
     if (user?.email) {
-      fetch(`http://localhost:1000/myTutors/${user.email}`)
+      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/myTutors/${user.email}`)
         .then((res) => {
           if (!res.ok) throw new Error("Failed to fetch");
           return res.json();
@@ -50,7 +50,7 @@ const MyTutor = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:1000/updateTutor/${selectedTutor._id}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/updateTutor/${selectedTutor._id}`,
         {
           method: "PUT",
           headers: { 
@@ -79,7 +79,7 @@ const MyTutor = () => {
     if (!deleteTarget?._id) return;
       const { data: tokenData } = await authClient.token();
     try {
-      await fetch(`http://localhost:1000/deleteTutor/${deleteTarget._id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/deleteTutor/${deleteTarget._id}`, {
         method: "DELETE",
         headers: {
         "content-type": "application/json",

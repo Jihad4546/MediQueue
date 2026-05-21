@@ -18,7 +18,7 @@ const AddTutor = () => {
         console.log(tokenData)
 
 
-        const res = await fetch('http://localhost:1000/addTutor', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/addTutor`, {
             method: "POST",
             headers: {
                 'content-type': "application/json",

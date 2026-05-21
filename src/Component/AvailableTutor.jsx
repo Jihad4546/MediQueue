@@ -4,7 +4,7 @@ import React from 'react';
 import TutorCard from './TutorCard';
 
 const AvailableTutor = async () => {
-    const res = await fetch(`http://localhost:1000/addTutor?limit=6`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/addTutor?limit=6`);
     const addTutors = await res.json();
     
     return (

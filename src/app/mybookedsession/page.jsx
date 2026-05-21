@@ -25,7 +25,7 @@ const MyBookings = () => {
         setLoading(true);
 
         const res = await fetch(
-          `http://localhost:1000/bookSession/${user.email}`, {
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/bookSession/${user.email}`, {
           headers: {
             authorization: `Bearer ${token}`, // এই হেডারটি ব্যাকএন্ডে চেক হবে
           },
@@ -53,7 +53,7 @@ const MyBookings = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:1000/cancelBooking/${cancelTarget._id}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/cancelBooking/${cancelTarget._id}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

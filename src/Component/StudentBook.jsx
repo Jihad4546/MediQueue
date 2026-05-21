@@ -42,7 +42,7 @@ const StudentBook = ({ tutorData }) => {
   useEffect(() => {
     if (user?.email && tutorData?._id) {
       fetch(
-        `http://localhost:1000/bookSession/check/${user.email}/${tutorData._id}`
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/bookSession/check/${user.email}/${tutorData._id}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -93,7 +93,7 @@ const StudentBook = ({ tutorData }) => {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:1000/bookSession", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/bookSession`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +106,7 @@ const StudentBook = ({ tutorData }) => {
       if (data.success) {
         // সফল বুকিংয়ের পর আপনার তৈরি করা প্যাচ এপিআই দিয়ে ডাটাবেজের স্লট ১ কমানো
         await fetch(
-          `http://localhost:1000/addTutor/decrease-slot/${tutorInfo._id}`,
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/addTutor/decrease-slot/${tutorInfo._id}`,
           { method: "PATCH" }
         );
 

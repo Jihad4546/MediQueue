@@ -41,8 +41,6 @@ const NotFound = () => {
 
               
 
-                    {/* Buttons */}
-                    {/* Buttons */}
                     <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
 
                         {/* Home Button */}

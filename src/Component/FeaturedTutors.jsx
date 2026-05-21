@@ -4,7 +4,7 @@ import React from 'react';
 
 const FeaturedTutors = async () => {
     // ডাটাবেজ বা এপিআই থেকে টিউটরদের ডাটা ফেচ করা
-    const res = await fetch('http://localhost:1000/addTutor');
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/addTutor`);
     const allTutors = await res.json();
 
     // হোম পেজের জন্য প্রথম ৩ জন টপ-রেটেড টিউটরকে ফিল্টার করে নেওয়া
