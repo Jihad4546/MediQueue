@@ -14,10 +14,15 @@ const AddTutor = () => {
         const data = Object.fromEntries(new FormData(e.currentTarget));
         data.userEmail = user?.email;  // ← typo fix: userEamil → userEmail
 
+        const {data:tokenData} = await authClient.token()
+        console.log(tokenData)
+
+
         const res = await fetch('http://localhost:1000/addTutor', {
             method: "POST",
             headers: {
-                'content-type': "application/json"
+                'content-type': "application/json",
+                authorization:`Bearer ${tokenData?.token}`
             },
             body: JSON.stringify(data)
         });

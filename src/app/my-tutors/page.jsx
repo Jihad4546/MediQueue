@@ -44,13 +44,18 @@ const MyTutor = () => {
 
   const handleUpdateSave = async () => {
     if (!selectedTutor?._id) return;
+      
+        const {data:tokenData} = await authClient.token()
+        console.log(tokenData)
 
     try {
       const res = await fetch(
         `http://localhost:1000/updateTutor/${selectedTutor._id}`,
         {
           method: "PUT",
-          headers: { "content-type": "application/json" },
+          headers: { 
+            "content-type": "application/json" , 
+            authorization:`Bearer ${tokenData?.token}`},
           body: JSON.stringify(updateForm),
         }
       );

@@ -2,7 +2,6 @@
 
 import DatePickers from '@/Component/DatePickers';
 import TutorCard from '@/Component/TutorCard';
-import { authClient } from '@/lib/auth-client';
 import { Button, Input, Spinner } from '@heroui/react';
 import { useEffect, useState } from 'react';
 
@@ -40,13 +39,9 @@ const AllTutorPage = () => {
 
             try {
                 // ✅ এই দুই লাইন যোগ করো
-                const { data: session } = await authClient.getSession();
-                const token = session?.session?.token;
-                console.log(token)
+                
                 const res = await fetch(`http://localhost:1000/addTutor?${params}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`  // ✅ এটা যোগ করো
-                    }
+                    
                 });
                 const data = await res.json();
                 setAddTutors(data);

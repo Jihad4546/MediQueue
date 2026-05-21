@@ -1,11 +1,19 @@
 
 import StudentBook from "@/Component/StudentBook";
+import { auth } from "@/lib/auth";
 import { Card, Chip, Button } from "@heroui/react";
+import { headers } from "next/headers";
 
 const TutorDetailsPage = async ({ params }) => {
     const { id } = await params;
-
-    const res = await fetch(`http://localhost:1000/addTutor/${id}`, {
+    const {token} = await auth.api.getToken({
+        headers: await headers()
+    })
+    const res = await fetch(`http://localhost:1000/addTutor/${id}`,{
+        headers:{
+                authorization: `Bearer ${token}`
+        }
+    }, {
         cache: 'no-store'
     });
     const tutorData = await res.json();
