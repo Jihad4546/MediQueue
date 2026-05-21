@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "react-toastify";
+import { Button } from "@heroui/react";
 
 const MyBookings = () => {
   const { data: session } = authClient.useSession();
@@ -43,7 +44,7 @@ const MyBookings = () => {
   }, [user?.email]);
 
   // ---------------- CANCEL BOOKING ----------------
-  const handleCancel = async () => {
+ const handleCancel = async () => {
     if (!cancelTarget?._id) return;
 
     try {
@@ -55,20 +56,23 @@ const MyBookings = () => {
         }
       );
 
-      if (!res.ok) throw new Error("Cancel failed");
+      const data = await res.json(); // 👈 রিসপন্সটি ডাটা আকারে নিন
 
-      setBookings((prev) =>
-        prev.map((b) =>
-          b._id === cancelTarget._id
-            ? { ...b, status: "cancelled" }
-            : b
-        )
-      );
-
-      toast.success("Booking cancelled.");
+      if (data.success) { // 👈 এখন এটি ডাটাবেজ থেকে সফল রেসপন্স পাবে
+        setBookings((prev) =>
+          prev.map((b) =>
+            b._id === cancelTarget._id
+              ? { ...b, bookStatus: "cancelled" }
+              : b
+          )
+        );
+        toast.success("Booking cancelled.");
+      } else {
+        toast.error("Failed to cancel");
+      }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to cancel booking");
+      toast.error("Something went wrong");
     } finally {
       setCancelTarget(null);
     }
@@ -79,7 +83,7 @@ const MyBookings = () => {
   // ---------------- LOADING ----------------
   if (loading) {
     return (
-      <p className="text-center p-10 text-gray-400">
+      <p className="text-center p-10 text-gray-400 dark:text-gray-500">
         Loading...
       </p>
     );
@@ -90,52 +94,44 @@ const MyBookings = () => {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
         <div className="text-6xl mb-4">📭</div>
-        <h3 className="text-xl font-semibold mb-2">
+        <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">
           No bookings found
         </h3>
-        <p className="text-gray-400 text-sm">
+        <p className="text-gray-400 dark:text-gray-500 text-sm">
           You haven't booked any sessions yet.
         </p>
       </div>
     );
   }
 
-  // ---------------- CONSTANTS (UNCHANGED) ----------------
-  const avatarColors = [
-    { bg: "#EEEDFE", color: "#3C3489" },
-    { bg: "#E1F5EE", color: "#085041" },
-    { bg: "#FAECE7", color: "#712B13" },
-    { bg: "#E6F1FB", color: "#0C447C" },
-  ];
-
+  // ---------------- STATUS STYLES (THEMED) ----------------
   const statusStyles = {
-    pending: { bg: "bg-yellow-100", text: "text-yellow-700" },
-    confirmed: { bg: "bg-green-100", text: "text-green-700" },
-    cancelled: { bg: "bg-red-100", text: "text-red-600" },
+    pending: "bg-yellow-100 text-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-400",
+    confirmed: "bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400",
+    cancelled: "bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400",
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 text-gray-900 dark:text-gray-100">
 
-      {/* HEADER (UNCHANGED) */}
+      {/* HEADER */}
       <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           My Bookings
         </h1>
         <span
-          className="text-xs font-semibold px-3 py-1 rounded-full"
-          style={{ background: "#EEEDFE", color: "#3C3489" }}
+          className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"
         >
           {bookings.length} sessions
         </span>
       </div>
 
-      {/* TABLE (UNCHANGED DESIGN) */}
-      <div className="overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+      {/* TABLE CONTAINER */}
+      <div className="overflow-x-auto rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
         <table className="min-w-[800px] w-full text-sm border-separate border-spacing-y-1">
 
           <thead>
-            <tr className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+            <tr className="bg-gray-50 dark:bg-gray-800/50 text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
               <th className="text-left px-5 py-4">#</th>
               <th className="text-left px-5 py-4">Tutor</th>
               <th className="text-left px-5 py-4">Student</th>
@@ -147,71 +143,62 @@ const MyBookings = () => {
 
           <tbody className="text-center">
             {bookings.map((booking, index) => {
-              const c = avatarColors[index % avatarColors.length];
+              const currentStatusClass =
+                statusStyles[booking.bookStatus] ?? statusStyles.pending;
 
-              const initials = booking.tutorName
-                ?.split(" ")
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase()
-                .slice(0, 2);
-
-              const s =
-                statusStyles[booking.status] ??
-                statusStyles.pending;
-
-              const isCancelled =
-                booking.status === "cancelled";
+              const isCancelled = booking.bookStatus === "cancelled";
 
               return (
                 <tr
                   key={booking._id}
-                  className="hover:bg-gray-50 transition duration-200"
+                  className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition duration-200"
                 >
-                  <td className="px-5 py-4 text-gray-400 font-medium">
+                  {/* # */}
+                  <td className="px-5 py-4 text-gray-400 dark:text-gray-500 font-medium">
                     {index + 1}
                   </td>
 
+                  {/* Tutor */}
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3 min-w-[180px]">
-                      <span className="font-medium text-gray-800 whitespace-nowrap">
+                      <span className="font-medium text-gray-800 dark:text-gray-200 whitespace-nowrap">
                         {booking.tutorName}
                       </span>
                     </div>
                   </td>
 
-                  <td className="px-5 py-4 text-gray-600 whitespace-nowrap">
+                  {/* Student */}
+                  <td className="px-5 py-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">
                     {booking.studentName}
                   </td>
 
-                  <td className="px-5 py-4 text-gray-600 whitespace-nowrap">
+                  {/* Email */}
+                  <td className="px-5 py-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">
                     {booking.studentEmail}
                   </td>
 
+                  {/* Status */}
                   <td className="px-5 py-4">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap capitalize ${s.bg} ${s.text}`}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap capitalize ${currentStatusClass}`}
                     >
-                      {booking.status}
+                      {booking.bookStatus}
                     </span>
                   </td>
 
+                  {/* Actions */}
                   <td className="px-5 py-4">
                     <button
                       disabled={isCancelled}
-                      onClick={() =>
-                        !isCancelled && setCancelTarget(booking)
-                      }
+                      onClick={() => !isCancelled && setCancelTarget(booking)}
                       className={`cursor-pointer rounded-full border px-4 py-1.5 text-xs font-semibold transition whitespace-nowrap
                         ${
                           isCancelled
-                            ? "border-gray-200 text-gray-300 cursor-not-allowed"
-                            : "border-red-200 text-red-500 hover:bg-red-50"
+                            ? "border-gray-200 dark:border-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                            : "border-red-200 dark:border-red-900/60 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
                         }`}
                     >
-                      {isCancelled
-                        ? "Cancelled"
-                        : "Cancel"}
+                      {isCancelled ? "Cancelled" : "Cancel"}
                     </button>
                   </td>
                 </tr>
@@ -221,39 +208,38 @@ const MyBookings = () => {
         </table>
       </div>
 
-      {/* MODAL (UNCHANGED) */}
+      {/* CANCEL MODAL */}
       {cancelTarget && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl text-center">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 px-4 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 w-full max-w-sm shadow-xl text-center border border-gray-100 dark:border-gray-800">
             <div className="text-5xl mb-4">🚫</div>
 
-            <h2 className="text-lg font-bold mb-2">
+            <h2 className="text-lg font-bold mb-2 text-gray-900 dark:text-white">
               Cancel Booking?
             </h2>
 
-            <p className="text-sm text-gray-400 mb-6">
+            <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
               Are you sure you want to cancel session with{" "}
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-gray-700 dark:text-gray-300">
                 {cancelTarget.tutorName}
               </span>
               ?
             </p>
 
-            <div className="flex gap-3 justify-center">
-              <button
+            <div className="flex gap-3 justify-center pt-5">
+              <Button
                 onClick={handleCancelClose}
-                className="px-5 py-2 rounded-full border text-sm text-gray-500 hover:bg-gray-50"
+                className="px-5 py-2 rounded-full border border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 transition"
               >
                 Go Back
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={handleCancel}
-                className="px-5 py-2 rounded-full text-sm font-semibold text-white"
-                style={{ background: "#A32D2D" }}
+                className="px-5 py-2 rounded-full text-sm font-semibold text-white transition text-black bg-red-600 hover:bg-red-700"
               >
                 Yes, Cancel
-              </button>
+              </Button>
             </div>
           </div>
         </div>

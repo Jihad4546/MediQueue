@@ -10,6 +10,13 @@ const TutorDetailsPage = async ({ params }) => {
     });
     const tutorData = await res.json();
 
+    const decreaseGlobalSlot = () => {
+        setTutor((prev) => ({
+            ...prev,
+            totalSlot: Number(prev?.totalSlot || 0) > 0 ? Number(prev.totalSlot) - 1 : 0
+        }));
+    };
+
     return (
         <div className="min-h-screen  flex items-center justify-center p-8">
             <Card className="max-w-3xl w-full shadow-lg p-8">
@@ -30,7 +37,7 @@ const TutorDetailsPage = async ({ params }) => {
                             <h1 className="text-2xl font-bold text-foreground">
                                 {tutorData.destinationName}
                             </h1>
-                           <p className="text-default-400 text-sm mt-1">
+                            <p className="text-default-400 text-sm mt-1">
 
                                 {tutorData.category}
                             </p>
@@ -53,7 +60,7 @@ const TutorDetailsPage = async ({ params }) => {
                         </div>
 
                         <div className="mt-4">
-                          <StudentBook tutorData={tutorData}></StudentBook>
+                            <StudentBook  tutorData={tutorData}></StudentBook>
                         </div>
                     </div>
 

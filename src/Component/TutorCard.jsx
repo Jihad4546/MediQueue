@@ -15,7 +15,7 @@ const TutorCard = ({ addtutor }) => {
             <div className="relative w-full h-56">
                 <Image
                     src={addtutor.imageUrl}
-                    alt={addtutor.tutorName}
+                    alt={addtutor.destinationName}
                     fill
                     className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

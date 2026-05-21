@@ -134,16 +134,6 @@ const AddTutor = () => {
                                 <FieldError />
                             </TextField>
                         </div>
-
-                        {/* Departure Date */}
-                        <div className="md:col-span-2">
-                            <TextField name="departureDate" type="date" isRequired>
-                                <Label>Departure Date</Label>
-                                <Input type="date" className="rounded-2xl" />
-                                <FieldError />
-                            </TextField>
-                        </div>
-
                         {/* Total Slots */}
                         <TextField name="totalSlot" isRequired>
                             <Label>Total Slots</Label>

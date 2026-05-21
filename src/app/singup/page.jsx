@@ -16,34 +16,34 @@ import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 
 export default function RegisterPage() {
-const onSubmit = async(e) => {
-  e.preventDefault();
+  const onSubmit = async (e) => {
+    e.preventDefault();
 
-  const formData = new FormData(e.currentTarget);
+    const formData = new FormData(e.currentTarget);
 
-  const user = Object.fromEntries(formData.entries());
-  const {data , error} = await authClient.signUp.email({
-    email : user.email ,
-    password: user.password , 
-    name: user.name, 
-    image : user.photo
+    const user = Object.fromEntries(formData.entries());
+    const { data, error } = await authClient.signUp.email({
+      email: user.email,
+      password: user.password,
+      name: user.name,
+      image: user.photo
 
-  })
-  console.log(data , error)
-  if(data){
-    redirect('/')
+    })
+    console.log(data, error)
+    if (data) {
+      redirect('/')
+    }
+    if (error) {
+      toast.error(error.message);
+    }
+
+  };
+
+  const handleGoogle = async () => {
+    const data = await authClient.signIn.social({
+      provider: "google"
+    })
   }
-   if (error) {
-    toast.error(error.message); 
-  }
-
-};
-
-const handleGoogle =async()=>{
-  const data = await authClient.signIn.social({
-    provider:"google"
-  })
-}
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 via-indigo-100 to-purple-100 p-4 relative overflow-hidden">
@@ -105,14 +105,14 @@ const handleGoogle =async()=>{
             name="password"
             type="password"
             validate={(value) => {
-              if (value.length < 8) {
-                return "Password must be at least 8 characters";
+              if (value.length < 6) {
+                return "Password must be at least 6 characters";
               }
               if (!/[A-Z]/.test(value)) {
                 return "Must contain at least one uppercase letter";
               }
-              if (!/[0-9]/.test(value)) {
-                return "Must contain at least one number";
+              if (!/[a-z]/.test(value)) {
+                return "Must contain at least one lowercase letter";
               }
               return null;
             }}
@@ -137,13 +137,13 @@ const handleGoogle =async()=>{
         {/* Footer */}
         <p className="text-center text-gray-600 mt-6 text-sm">
           Already have an account? <Link href={'/login'}>
-          <span className="text-indigo-600 font-semibold cursor-pointer hover:underline">Login</span>
+            <span className="text-indigo-600 font-semibold cursor-pointer hover:underline">Login</span>
           </Link>
         </p>
         <div>
           <h1 className="text-center font-bold text-xl">or</h1>
-          <Button onClick={handleGoogle} className={'w-full mt-4' } variant="outline"><FcGoogle />
- SingIn With Google</Button>
+          <Button onClick={handleGoogle} className={'w-full mt-4'} variant="outline"><FcGoogle />
+            SingIn With Google</Button>
         </div>
       </div>
     </div>
