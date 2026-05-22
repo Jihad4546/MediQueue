@@ -9,14 +9,15 @@ const Plus_Jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
 });
 
-// app/layout.js ফাইলে এই অংশটি বসান
 export const metadata = {
+  metadataBase: new URL(  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"), // ✅ এটা যোগ করুন (আপনার real domain)
   title: {
     template: "%s | MediQueue",
-    default: "MediQueue", 
+    default: "MediQueue",
   },
   description: "MediQueue লার্নিং প্ল্যাটফর্ম",
 };
+
 export default function RootLayout({ children }) {
   return (
     <html
@@ -24,11 +25,11 @@ export default function RootLayout({ children }) {
       className={`${Plus_Jakarta.className} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className=" bg-background text-foreground min-h-full flex flex-col">
+      <body className="bg-background text-foreground min-h-full flex flex-col">
         <NextThemeProvider>
-          <Navbar></Navbar>
+          <Navbar />
           <main>{children}</main>
-          <Footer></Footer>
+          <Footer />
           <ToastContainer />
         </NextThemeProvider>
       </body>
